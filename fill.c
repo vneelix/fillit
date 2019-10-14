@@ -6,7 +6,7 @@
 /*   By: vneelix <vneelix@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/27 14:00:55 by vneelix           #+#    #+#             */
-/*   Updated: 2019/10/04 15:07:59 by vneelix          ###   ########.fr       */
+/*   Updated: 2019/10/09 20:14:09 by vneelix          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,11 @@ static int		shift_restrictor_y(unsigned long *t, unsigned short size)
 
 	if (size <= 4)
 		i = 0;
-	if (size >= 5 && size <= 8)
+	else if (size >= 5 && size <= 8)
 		i = 1;
-	if (size >= 9 && size <= 12)
+	else if (size >= 9 && size <= 12)
 		i = 2;
-	if (size >= 13 && size <= 16)
+	else
 		i = 3;
 	t1 = t + i;
 	if (((unsigned short*)(t + i))[4 - (size % 4 == 0 ? 4 : size % 4)] != 0)
@@ -55,8 +55,7 @@ static int		next_position(unsigned long *t, int size)
 		if (move_yd(t) == -1)
 			return (-1);
 		while (move_xl(t) == 0)
-		{
-		}
+			;
 	}
 	else
 	{
@@ -70,7 +69,6 @@ static int		func(unsigned long m[4], unsigned long *t, unsigned short size)
 {
 	if (*t == 255)
 		return (0);
-	zero_position(t);
 	while (1)
 	{
 		if (((m[0] & t[0]) | (m[1] & t[1])
@@ -88,7 +86,10 @@ static int		func(unsigned long m[4], unsigned long *t, unsigned short size)
 			m[3] -= t[3];
 		}
 		if (next_position(t, size) != 0)
+		{
+			zero_position(t);
 			return (-1);
+		}
 	}
 }
 
@@ -96,7 +97,6 @@ int				fillit(unsigned long *t, unsigned short size)
 {
 	unsigned long	m[4];
 
-	zero_position(t);
 	while (1)
 	{
 		m[0] = t[0];
@@ -113,5 +113,6 @@ int				fillit(unsigned long *t, unsigned short size)
 			size++;
 		}
 	}
+	output(t, size);
 	return (0);
 }

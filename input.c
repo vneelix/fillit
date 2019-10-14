@@ -6,34 +6,38 @@
 /*   By: vneelix <vneelix@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/25 15:55:02 by vneelix           #+#    #+#             */
-/*   Updated: 2019/10/01 14:23:39 by vneelix          ###   ########.fr       */
+/*   Updated: 2019/10/09 15:48:54 by vneelix          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fillit.h"
 
-static unsigned short	tetromino_valid(unsigned short t)
+static int				check_valid(char *matrix)
 {
-	unsigned short m;
-	unsigned short i;
+	int	i;
+	int	j;
+	int	sum;
 
 	i = 0;
-	m = 15;
-	while (i < 3)
+	sum = 0;
+	while (i < 16 && sum < 6)
 	{
-		while ((t & (1 << m)) == 0)
-			m--;
-		while ((t & (1 << m)) > 0 && i != 3)
-		{
-			if ((t & (1 << (m - 4))) == 0)
-				if ((t & (1 << (m - 1))) == 0)
-					if ((t & (1 << (m + 1))) == 0)
-						return (0);
-			i++;
-			m--;
-		}
+		j = -1;
+		while (++j < 4 && sum < 6)
+			if (*(matrix + i + j) == '#')
+			{
+				if (i > 4)
+					sum += *(matrix + (i - 5) + j) == '#' ? 1 : 0;
+				if (j > 0)
+					sum += *(matrix + i + (j - 1)) == '#' ? 1 : 0;
+				if (i < 14)
+					sum += *(matrix + (i + 5) + j) == '#' ? 1 : 0;
+				if (j < 4)
+					sum += *(matrix + i + (j + 1)) == '#' ? 1 : 0;
+			}
+		i += 5;
 	}
-	return (t);
+	return (sum == 6 ? 1 : -1);
 }
 
 static unsigned short	flow_to_bytes(char *s)
@@ -53,7 +57,7 @@ static unsigned short	flow_to_bytes(char *s)
 		}
 		while (*s == '#')
 		{
-			t = t | (1 << m);
+			t |= (1 << m);
 			m--;
 			s++;
 		}
@@ -63,31 +67,29 @@ static unsigned short	flow_to_bytes(char *s)
 
 static int				get_flow(int fd, char *bf)
 {
-	int		i;
-	int		j;
+	int	i;
+	int	j;
+	int	sum;
 
 	if ((i = read(fd, bf, 546)) > 545 || i == 0 || (i - 20) % 21 != 0)
 		return (-1);
 	bf[i] = '\0';
-	i = 4;
-	j = 0;
-	while (bf[i] != '\0')
-	{
-		if (bf[i] != '\n')
-			return (-1);
-		if ((j++) == 3)
-		{
-			i++;
-			j = -1;
-		}
-		else
-			i += 5;
-	}
 	i = 0;
-	j = 0;
-	while (bf[i] != '\0')
-		j += (unsigned int)(bf[i++]);
-	return ((j - 732) % 742 == 0 ? (j - 732) / 742 : -1);
+	j = 1;
+	sum = 0;
+	while (bf[i] != '\0' || bf[i] == '.' || bf[i] == '#' || bf[i] == '\n')
+	{
+		if (bf[i] == '\n' && ((i + j) % 5 != 0 && (i + j - 1) % 20 != 0))
+			return (-1);
+		if ((bf[i] == '\n' && (i + j - 1) % 20 == 0) || (bf[i + 1] == '\0'))
+		{
+			j--;
+			if (check_valid(bf + i - (bf[i + 1] == '\0' ? 19 : 20)) == -1)
+				return (-1);
+		}
+		sum += (unsigned int)(bf[i++]);
+	}
+	return ((sum - 732) % 742 == 0 ? (sum - 732) / 742 : -1);
 }
 
 static	unsigned short	*inputf(int c, char *bf)
@@ -102,11 +104,7 @@ static	unsigned short	*inputf(int c, char *bf)
 	while (i < c)
 	{
 		*(bf + 20) = '\0';
-		if ((tetrom[i] = tetromino_valid(flow_to_bytes(bf))) == 0)
-		{
-			free(tetrom);
-			return (NULL);
-		}
+		tetrom[i] = flow_to_bytes(bf);
 		bf += 21;
 		i++;
 	}

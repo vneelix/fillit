@@ -6,7 +6,7 @@
 /*   By: vneelix <vneelix@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/25 15:54:45 by vneelix           #+#    #+#             */
-/*   Updated: 2019/10/04 15:58:18 by vneelix          ###   ########.fr       */
+/*   Updated: 2019/10/09 20:24:47 by vneelix          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ static unsigned long	*convert(unsigned short *tab)
 		t[i + 1] = 0;
 		t[i + 2] = 0;
 		t[i + 3] = 0;
+		zero_position(&(t[i]));
 		tab++;
 		i += 4;
 	}
@@ -48,9 +49,20 @@ static unsigned short	sqr_size(unsigned long *t)
 	i = 0;
 	while (t[i] != 255)
 		i += 4;
-	j = 4;
+	j = 3;
 	while ((j * j) < i)
 		j++;
+	if (*(t + 4) == 255)
+		if (*t == 13835269161514696704UL)
+			return (2);
+	if (j < 4)
+		while (*t != 255)
+		{
+			if (*t == 17293822569102704640UL
+				|| *t == 9223512776490647552UL)
+				return (4);
+			t += 4;
+		}
 	return (j);
 }
 
@@ -59,16 +71,19 @@ int						main(int argc, char **argv)
 	unsigned short	*tetr;
 	unsigned long	*t;
 
-	if (argc != 2
-		|| ((tetr = get_tetromino(argv[1])) == NULL))
+	if (argc != 2)
+	{
+		write(1, "usage: ./fillit file_name\n", 26);
+		return (0);
+	}
+	if ((tetr = get_tetromino(argv[1])) == NULL)
 	{
 		write(1, "error\n", 6);
-		return (-1);
+		return (0);
 	}
 	t = convert(tetr);
+	fillit(t, sqr_size(t));
 	free(tetr);
-	fillit(t, (sqr_size(t) + 1));
-	output(t, 0);
 	free(t);
 	return (0);
 }

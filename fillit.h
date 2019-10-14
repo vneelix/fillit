@@ -6,16 +6,16 @@
 /*   By: vneelix <vneelix@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/09/19 15:35:51 by vneelix           #+#    #+#             */
-/*   Updated: 2019/10/04 15:53:36 by vneelix          ###   ########.fr       */
+/*   Updated: 2019/10/08 15:57:35 by ayooden          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef FILLIT_H
 # define FILLIT_H
 
-# include "unistd.h"
-# include "stdlib.h"
-# include "fcntl.h"
+# include <unistd.h>
+# include <stdlib.h>
+# include <fcntl.h>
 
 /*
 ** input

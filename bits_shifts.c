@@ -6,7 +6,7 @@
 /*   By: vneelix <vneelix@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/10/01 12:54:50 by vneelix           #+#    #+#             */
-/*   Updated: 2019/10/03 18:29:03 by vneelix          ###   ########.fr       */
+/*   Updated: 2019/10/08 17:17:30 by vneelix          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,16 +50,19 @@ int		move_xr(unsigned long *t)
 
 int		move_yu(unsigned long *t)
 {
-	int m;
+	int			m;
 
 	m = 3;
 	while (t[m] == 0)
 		m--;
 	if (m == 0 && (t[m] >= (1UL << 48)))
 		return (-1);
-	t[m - 1] <<= 16;
-	t[m - 1] |= *((unsigned short*)(t + m) + 3);
-	*((unsigned short*)(t + m) + 3) = 0;
+	if (m != 0)
+	{
+		t[m - 1] <<= 16;
+		t[m - 1] |= *((unsigned short*)(t + m) + 3);
+		*((unsigned short*)(t + m) + 3) = 0;
+	}
 	t[m] <<= 16;
 	return (0);
 }
@@ -73,9 +76,12 @@ int		move_yd(unsigned long *t)
 		m++;
 	if (m == 3 && (t[m] & 65535UL) != 0)
 		return (-1);
-	t[m + 1] >>= 16;
-	*((unsigned short*)(t + m + 1) + 3) |= *((unsigned short*)(t + m));
-	*((unsigned short*)(t + m)) = 0;
+	if (m != 3)
+	{
+		t[m + 1] >>= 16;
+		*((unsigned short*)(t + m + 1) + 3) |= *((unsigned short*)(t + m));
+		*((unsigned short*)(t + m)) = 0;
+	}
 	t[m] >>= 16;
 	return (0);
 }

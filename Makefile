@@ -3,14 +3,14 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: vneelix <marvin@42.fr>                     +#+  +:+       +#+         #
+#    By: vneelix <vneelix@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/09/23 22:34:46 by vneelix           #+#    #+#              #
-#    Updated: 2019/09/23 23:02:29 by vneelix          ###   ########.fr        #
+#    Updated: 2019/10/04 20:40:03 by vneelix          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-SRCS = general.c input.c lstfunc.c
+SRCS = general.c input.c fill.c bits_shifts.c output.c
 
 OBJS = $(SRCS:.c=.o)
 
